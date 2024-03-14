@@ -19,16 +19,23 @@ def search_rib_db(rib):
                 return True
     return False
 
+def search_threshold_db(rib):
+    with connect_to_file("accounts.txt") as file:
+        file.seek(0)
+        for i in file.readlines():
+            if rib == i.split(",")[1]:
+                return float(i.split(",")[3])
+
 def add_client_db(client_id, first_name, last_name, password):
     with connect_to_file("clients.txt") as file:
         file.seek(0)
         data = f"{client_id},{first_name},{last_name},{password}\n"
         file.write(data)
 
-def add_account_db(client_id, rib, balance):
+def add_account_db(client_id, rib, balance, threshold):
     with connect_to_file("accounts.txt") as file:
         file.seek(0)
-        data = f"{client_id},{rib},{balance}\n"
+        data = f"{client_id},{rib},{balance},{str(threshold)}\n"
         file.write(data)
 
 def check_authentication_db(client_id, password):
@@ -61,6 +68,18 @@ def modify_balance_db(rib, amount):
             with open("accounts.txt", 'w') as file:
                 file.writelines(lines)
             print(f"New balance for account {rib}: {account_data[2]}")
+            break
+
+def modify_threshold_db(rib, threshold):
+    with open("accounts.txt", 'r') as file:
+        lines = file.readlines()
+    for i in range(len(lines)):
+        account_data = lines[i].strip().split(',')
+        if account_data[1] == rib:
+            account_data[3] = str(threshold)
+            lines[i] = ','.join(account_data) + "\n"
+            with open("accounts.txt", 'w') as file:
+                file.writelines(lines)
             break
 
 def transaction_db(client_id, rib_sender, rib_receiver, amount):

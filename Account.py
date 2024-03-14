@@ -2,6 +2,7 @@ import DatabaseManagement as bd
 
 class Account:
     def __init__(self, client_id, rib, balance=0):
+        self.threshold = 0.0
         self.client_id = client_id
         self.rib = rib
         self.balance = balance

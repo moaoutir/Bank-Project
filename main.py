@@ -27,8 +27,9 @@ while (True):
         print("| 4 : Make a transaction       |")
         print("| 5 : Transactions history     |")
         print("| 7 : Switch to another client |")
-        print("| 8 : Log out                  |")
-        print("| 9 : Exit                     |")
+        print("| 8 : Set a balance alert      |")
+        print("| 9 : Log out                  |")
+        print("| 10: Exit                     |")
         print("+------------------------------+")
         cmp = int(input("\nEnter a digit : "))
         if(cmp == 1):
@@ -49,6 +50,8 @@ while (True):
             if client.client_id:
                 connect = True
         elif (cmp == 8):
+            client.setBalanceAlerts()
+        elif (cmp == 9):
             connect = False
             print("Successfully logged out!\n")
         else:

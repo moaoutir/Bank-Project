@@ -38,7 +38,7 @@ class Client:
         print("This is your RIB :", rib)
         balance = float(input("Give the balance which will you put in your account : "))
         new_account = ac.Account(client_id, rib, balance)
-        bd.add_account_db(new_account.client_id, new_account.rib, new_account.balance)
+        bd.add_account_db(new_account.client_id, new_account.rib, new_account.balance,0.0)
         return new_account
     
     def other_account(self):
@@ -90,6 +90,7 @@ class Client:
         print("#################################################\n")
 
     def make_transaction(self):
+        response = "yes"
         self.show_info()
         rib_sender = input("Enter RIB FROM where you want make transaction (sender) : ")
         rib_receiver = input("Enter RIB TO where you want make transaction (receiver) : ")
@@ -98,8 +99,13 @@ class Client:
             if (i.rib == rib_sender):
                 if (amount > float(i.balance)):
                     print("Error : The amount is greater than your balance !")
-                i.transaction(self.client_id, rib_sender, rib_receiver, amount)
-                self.accounts = bd.load_accounts_db(self.client_id)
+                threshold = float(bd.search_threshold_db(rib_sender))
+                if (threshold > (float(i.balance) - amount) and threshold > 0):
+                    print("Warning: This transaction will reduce your balance below the alert threshold you have defined")
+                    response = input("Please confirm if you would like to proceed with this transaction: Yes/No ").lower()
+                if (threshold == 0.0) or (response == "yes"):
+                    i.transaction(self.client_id, rib_sender, rib_receiver, amount)
+                    self.accounts = bd.load_accounts_db(self.client_id)
                 return
         print(f"Account with RIB {rib_sender} not found.")
 
@@ -117,3 +123,8 @@ class Client:
             print("# | {:<18} | {:<20} | {:<20} | #".format(str(i[1]), str(i[2]), str(i[3])))
         print("# -------------------------------------------------------------------- #")
         print("########################################################################\n")
+
+    def setBalanceAlerts(self):
+        rib = input("Enter the RIB to which you wish to apply the alert :\t")
+        threshold = float(input("Enter the minimum threshold of your balance to be notified :\t"))
+        bd.modify_threshold_db(rib,threshold)
